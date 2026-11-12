@@ -1,10 +1,13 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
+import Navbar from "./Navbar";
 
 const Header = () => {
   return (
     <header className="header_area">
+
+      {/* Top Menu */}
       <div className="top_menu">
         <div className="container">
           <div className="row">
@@ -19,9 +22,17 @@ const Header = () => {
             <div className="col-lg-5">
               <div className="float-right">
                 <ul className="right_side">
-                  <li><Link to="/cart">Gift Card</Link></li>
-                  <li><Link to="/tracking">Track Order</Link></li>
-                  <li><Link to="/contact">Contact Us</Link></li>
+                  <li>
+                    <Link to="/cart">Gift Card</Link>
+                  </li>
+
+                  <li>
+                    <Link to="/tracking">Track Order</Link>
+                  </li>
+
+                  <li>
+                    <Link to="/contact">Contact Us</Link>
+                  </li>
                 </ul>
               </div>
             </div>
@@ -29,6 +40,10 @@ const Header = () => {
           </div>
         </div>
       </div>
+
+      {/* Main Menu */}
+      <Navbar />
+
     </header>
   );
 };

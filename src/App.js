@@ -2,7 +2,7 @@ import logo from "./logo.svg";
 import Home from "./pages/Home";
 
 import Header from "./components/layout/Header";
-import Navbar from "./components/layout/Navbar";
+// import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Shop from "./pages/Shop";
@@ -14,7 +14,7 @@ function App() {
     <BrowserRouter>
       <Header />
 
-      <Navbar />
+      {/* <Navbar /> */}
 
       <Routes>
         <Route path="/" element={<Home />} />
