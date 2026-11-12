@@ -2,98 +2,103 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
-const ProductInfo = () => {
-  const [quantity, setQuantity] = useState(1);
+const ProductInfo = ({ product }) => {
+    const [quantity, setQuantity] = useState(1);
 
-  const increaseQuantity = () => {
-    setQuantity((previous) => previous + 1);
-  };
+    const increaseQuantity = () => {
+        setQuantity(prev => prev + 1);
+    };
 
-  const decreaseQuantity = () => {
-    setQuantity((previous) => Math.max(0, previous - 1));
-  };
+    const decreaseQuantity = () => {
+        setQuantity(prev => Math.max(1, prev - 1));
+    };
 
-  return (
-    <div className="col-lg-5 offset-lg-1">
-      <div className="s_product_text">
-        <h3>Faded SkyBlu Denim Jeans</h3>
+    return (
+        <div className="col-lg-5 offset-lg-1">
+            <div className="s_product_text">
 
-        <h2>$149.99</h2>
+                <h3>{product.name}</h3>
 
-        <ul className="list">
-          <li>
-            <Link className="active" to="/shop">
-              <span>Category</span> : Household
-            </Link>
-          </li>
+                <h2>${Number(product.price).toFixed(2)}</h2>
 
-          <li>
-            <Link to="/shop">
-              <span>Availibility</span> : In Stock
-            </Link>
-          </li>
-        </ul>
+                <ul className="list">
+                    <li>
+                        <Link className="active" to="/shop">
+                            <span>Category</span> :{" "}
+                            {product.category?.name || "General"}
+                        </Link>
+                    </li>
 
-        <p>
-          Mill Oil is an innovative oil filled radiator with the most
-          modern technology. If you are looking for something that can
-          make your interior look awesome, and at the same time give you
-          the pleasant warm feeling during the winter.
-        </p>
+                    <li>
+                        <span>Availability</span> :{" "}
+                        {product.stockQuantity > 0 ? "In Stock" : "Out of Stock"}
+                    </li>
+                </ul>
 
-        <div className="product_count">
-          <label htmlFor="sst">Quantity:</label>
+                <p>{product.description}</p>
 
-          <input
-            type="text"
-            name="qty"
-            id="sst"
-            maxLength="12"
-            value={quantity}
-            title="Quantity:"
-            className="input-text qty"
-            onChange={(e) => {
-              const value = e.target.value;
+                <p>
+                    Available Quantity: {product.stockQuantity}
+                </p>
 
-              if (/^\d*$/.test(value)) {
-                setQuantity(value === "" ? "" : Number(value));
-              }
-            }}
-          />
+                <div className="product_count">
+                    <label htmlFor="sst">Quantity:</label>
 
-          <button
-            onClick={increaseQuantity}
-            className="increase items-count"
-            type="button"
-          >
-            <i className="lnr lnr-chevron-up"></i>
-          </button>
+                    <input
+                        type="number"
+                        id="sst"
+                        value={quantity}
+                        min="1"
+                        max={product.stockQuantity}
+                        className="input-text qty"
+                        onChange={(e) => {
+                            const value = Number(e.target.value);
 
-          <button
-            onClick={decreaseQuantity}
-            className="reduced items-count"
-            type="button"
-          >
-            <i className="lnr lnr-chevron-down"></i>
-          </button>
+                            if (
+                                value >= 1 &&
+                                value <= product.stockQuantity
+                            ) {
+                                setQuantity(value);
+                            }
+                        }}
+                    />
+
+                    <button
+                        className="increase items-count"
+                        type="button"
+                        onClick={increaseQuantity}
+                        disabled={quantity >= product.stockQuantity}
+                    >
+                        <i className="lnr lnr-chevron-up"></i>
+                    </button>
+
+                    <button
+                        className="reduced items-count"
+                        type="button"
+                        onClick={decreaseQuantity}
+                        disabled={quantity <= 1}
+                    >
+                        <i className="lnr lnr-chevron-down"></i>
+                    </button>
+                </div>
+
+                <div className="card_area">
+                    <Link className="main_btn" to="/cart">
+                        Add to Cart
+                    </Link>
+
+                    <Link className="icon_btn" to="/compare">
+                        <i className="lnr lnr-diamond"></i>
+                    </Link>
+
+                    <Link className="icon_btn" to="/wishlist">
+                        <i className="lnr lnr-heart"></i>
+                    </Link>
+                </div>
+
+            </div>
         </div>
-
-        <div className="card_area">
-          <Link className="main_btn" to="/cart">
-            Add to Cart
-          </Link>
-
-          <Link className="icon_btn" to="/compare">
-            <i className="lnr lnr-diamond"></i>
-          </Link>
-
-          <Link className="icon_btn" to="/wishlist">
-            <i className="lnr lnr-heart"></i>
-          </Link>
-        </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default ProductInfo;
