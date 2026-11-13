@@ -1,143 +1,125 @@
 
 import React from "react";
+import { useCart } from "../../context/CartContext";
 
 const OrderSummary = () => {
+  const { cartItems } = useCart();
+
+  const subtotal = cartItems.reduce(
+    (total, item) =>
+      total + Number(item.price) * item.quantity,
+    0
+  );
+
+  const shipping = cartItems.length > 0 ? 50 : 0;
+  const total = subtotal + shipping;
+
+  if (cartItems.length === 0) {
+    return (
+      <div className="col-lg-4">
+        <div className="order_box">
+          <h2>Your Order</h2>
+          <p>Your cart is empty.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="col-lg-4">
       <div className="order_box">
-
         <h2>Your Order</h2>
 
-        {/* Product List */}
         <ul className="list">
           <li>
-            <a href="#product">
+            <a href="#!">
               Product
               <span>Total</span>
             </a>
           </li>
 
-          <li>
-            <a href="#blackberry">
-              Fresh Blackberry
-              <span className="middle">x 02</span>
-              <span className="last">$720.00</span>
-            </a>
-          </li>
-
-          <li>
-            <a href="#tomatoes">
-              Fresh Tomatoes
-              <span className="middle">x 02</span>
-              <span className="last">$720.00</span>
-            </a>
-          </li>
-
-          <li>
-            <a href="#brocoli">
-              Fresh Brocoli
-              <span className="middle">x 02</span>
-              <span className="last">$720.00</span>
-            </a>
-          </li>
+          {cartItems.map((item) => (
+            <li key={item.id}>
+              <a href="#!">
+                {item.name}
+                <span className="middle">
+                  x {String(item.quantity).padStart(2, "0")}
+                </span>
+                <span className="last">
+                  ${(Number(item.price) * item.quantity).toFixed(2)}
+                </span>
+              </a>
+            </li>
+          ))}
         </ul>
 
-        {/* Price Details */}
         <ul className="list list_2">
           <li>
-            <a href="#subtotal">
+            <a href="#!">
               Subtotal
-              <span>$2160.00</span>
+              <span>${subtotal.toFixed(2)}</span>
             </a>
           </li>
 
           <li>
-            <a href="#shipping">
+            <a href="#!">
               Shipping
-              <span>Flat rate: $50.00</span>
+              <span>Flat rate: ${shipping.toFixed(2)}</span>
             </a>
           </li>
 
           <li>
-            <a href="#total">
+            <a href="#!">
               Total
-              <span>$2210.00</span>
+              <span>${total.toFixed(2)}</span>
             </a>
           </li>
         </ul>
 
-        {/* Check Payment */}
         <div className="payment_item">
           <div className="radion_btn">
-            <input
-              type="radio"
-              id="f-option5"
-              name="payment"
-            />
-
-            <label htmlFor="f-option5">
-              Check payments
-            </label>
-
+            <input type="radio" id="payment-check" name="payment" />
+            <label htmlFor="payment-check">Check payments</label>
             <div className="check"></div>
           </div>
-
           <p>
-            Please send a check to Store Name, Store Street, Store Town,
-            Store State / County, Store Postcode.
+            Please send a check to Store Name, Store Street,
+            Store Town, Store State / County, Store Postcode.
           </p>
         </div>
 
-        {/* PayPal Payment */}
         <div className="payment_item active">
           <div className="radion_btn">
             <input
               type="radio"
-              id="f-option6"
+              id="payment-paypal"
               name="payment"
               defaultChecked
             />
-
-            <label htmlFor="f-option6">
-              Paypal
-            </label>
-
+            <label htmlFor="payment-paypal">Paypal</label>
             <img
               src="/img/product/single-product/card.jpg"
-              alt="Payment cards"
+              alt="Payment methods"
             />
-
             <div className="check"></div>
           </div>
-
           <p>
-            Please send a check to Store Name, Store Street, Store Town,
-            Store State / County, Store Postcode.
+            Please send a check to Store Name, Store Street,
+            Store Town, Store State / County, Store Postcode.
           </p>
         </div>
 
-        {/* Terms and Conditions */}
         <div className="creat_account">
-          <input
-            type="checkbox"
-            id="f-option4"
-            name="terms"
-          />
-
-          <label htmlFor="f-option4">
-            I’ve read and accept the
+          <input type="checkbox" id="accept-terms" />
+          <label htmlFor="accept-terms">
+            I've read and accept the
           </label>
-
-          <a href="#terms">
-            {" "}terms &amp; conditions*
-          </a>
+          <a href="#!"> terms &amp; conditions*</a>
         </div>
 
-        {/* Place Order */}
-        <a className="main_btn" href="#paypal">
+        <button type="button" className="main_btn">
           Proceed to Paypal
-        </a>
-
+        </button>
       </div>
     </div>
   );

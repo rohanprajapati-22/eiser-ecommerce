@@ -30,7 +30,7 @@ const blogs = [
 
 const LatestBlog = () => {
   return (
-    <section class="blog-area section-gap">
+    <section class="blog-area  section_gap_top">
       <div class="container">
         <div class="row justify-content-center">
           <div class="col-lg-12">

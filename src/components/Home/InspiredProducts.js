@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
 
@@ -29,7 +28,7 @@ const products = [
   },
 ];
 
-const InspiredProducts = () => {
+const InspiredProducts = ({ products }) => {
   return (
     <section className="inspired_product_area section_gap_bottom_custom">
       <div className="container">
@@ -47,7 +46,7 @@ const InspiredProducts = () => {
                 <div className="product-img">
                   <img
                     className="img-fluid w-100"
-                    src={product.image}
+                    src={product.imageUrl}
                     alt={product.name}
                   />
 
@@ -69,7 +68,7 @@ const InspiredProducts = () => {
                     <h4>{product.name}</h4>
                   </Link>
                   <div className="mt-3">
-                    <h5>{product.price}</h5>
+                    <h5>${product.price}</h5>
                   </div>
                 </div>
 

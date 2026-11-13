@@ -14,3 +14,19 @@ export const getProductById = async (id) => {
     return response.data;
 };
 
+
+export const getHomeProducts = async () => {
+  const products = await getProducts();
+
+  return {
+    featuredProducts: products.filter(
+      (product) => product.isFeatured && product.isActive
+    ),
+    newProducts: products.filter(
+      (product) => product.isNew && product.isActive
+    ),
+    inspiredProducts: products.filter(
+      (product) => product.isInspired && product.isActive
+    ),
+  };
+};

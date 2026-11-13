@@ -27,7 +27,7 @@ const products = [
 
 ];
 
-const FeaturedProducts = () => {
+const FeaturedProducts = ({ products }) => {
   return (
     <section className="feature_product_area section_gap_bottom_custom">
       <div className="container">
@@ -46,7 +46,7 @@ const FeaturedProducts = () => {
                 <div className="product-img">
                   <img
                     className="img-fluid w-100"
-                    src={product.image}
+                    src={product.imageUrl}
                     alt={product.name}
                   />
 
@@ -76,7 +76,7 @@ const FeaturedProducts = () => {
                   <div className="mt-3">
                     <div className="d-flex justify-content-between">
                       <div>
-                        <h5>{product.price}</h5>
+                        <h5>${product.price}</h5>
                         <del>{product.oldPrice}</del>
                       </div>
                     </div>

@@ -1,113 +1,160 @@
-
-import React from "react";
 import { Link } from "react-router-dom";
+import { useCart } from "../../context/CartContext";
+import { toast } from "react-toastify";
 
 const CartItems = () => {
-  return (
-    <section className="cart_area">
-      <div className="container">
-        <div className="cart_inner">
-          <div className="table-responsive">
-            <table className="table">
-              <thead>
-                <tr>
-                  <th scope="col">Product</th>
-                  <th scope="col">Price</th>
-                  <th scope="col">Quantity</th>
-                  <th scope="col">Total</th>
-                </tr>
-              </thead>
+    const {
+        cartItems,
+        removeFromCart,
+        updateQuantity
+    } = useCart();
 
-              <tbody>
-                <tr>
-                  <td>
-                    <div className="media">
-                      <div className="d-flex">
-                        <img
-                          src="/img/product/single-product/cart-1.jpg"
-                          alt="Minimalistic Product"
-                        />
-                      </div>
-                      <div className="media-body">
-                        <p>Minimalistic shop for multipurpose use</p>
-                      </div>
-                    </div>
-                  </td>
+    const subtotal = cartItems.reduce(
+        (total, item) => total + Number(item.price) * item.quantity,
+        0
+    );
 
-                  <td>
-                    <h5>$360.00</h5>
-                  </td>
+    const handleQuantityChange = (item, quantity) => {
+        if (quantity < 1) return;
 
-                  <td>
-                    <div className="product_count">
-                      <input
-                        type="text"
-                        value="1"
-                        readOnly
-                        className="input-text qty"
-                      />
-                    </div>
-                  </td>
+        if (quantity > item.stockQuantity) {
+            toast.error("Requested quantity exceeds available stock");
+            return;
+        }
 
-                  <td>
-                    <h5>$360.00</h5>
-                  </td>
-                </tr>
+        updateQuantity(item.id, quantity);
+    };
 
-                <tr>
-                  <td colSpan="4">
-                    <div className="checkout_btn_inner d-flex align-items-center justify-content-end">
-                      <Link className="gray_btn" to="/shop">
+    if (cartItems.length === 0) {
+        return (
+            <section className="cart_area">
+                <div className="container text-center section_gap">
+                    <h3>Your cart is empty!</h3>
+                    <p>Add some products to continue shopping.</p>
+                    <Link to="/shop" className="main_btn">
                         Continue Shopping
-                      </Link>
-                    </div>
-                  </td>
-                </tr>
+                    </Link>
+                </div>
+            </section>
+        );
+    }
 
-                <tr className="bottom_button">
-                  <td colSpan="4">
-                    <div className="cupon_text d-flex align-items-center">
-                      <input type="text" placeholder="Coupon Code" />
-                      <Link className="main_btn" to="/cart">
-                        Apply
-                      </Link>
-                    </div>
-                  </td>
-                </tr>
+    return (
+        <section className="cart_area">
+            <div className="container">
+                <div className="cart_inner">
+                    <div className="table-responsive">
+                        <table className="table">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Total</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
 
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td>
-                    <h5>Subtotal</h5>
-                  </td>
-                  <td>
-                    <h5>$360.00</h5>
-                  </td>
-                </tr>
+                            <tbody>
+                                {cartItems.map(item => (
+                                    <tr key={item.id}>
+                                        <td>
+                                            <div className="media">
+                                                <div className="d-flex">
+                                                    <img
+                                                        src={item.imageUrl}
+                                                        alt={item.name}
+                                                        style={{
+                                                            width: "100px",
+                                                            height: "100px",
+                                                            objectFit: "contain"
+                                                        }}
+                                                    />
+                                                </div>
 
-                <tr className="out_button_area">
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>
-                    <div className="checkout_btn_inner d-flex align-items-center">
-                      <Link className="gray_btn" to="/shop">
-                        Continue Shopping
-                      </Link>
-                      <Link className="main_btn" to="/checkout">
-                        Proceed to checkout
-                      </Link>
+                                                <div className="media-body">
+                                                    <p>{item.name}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                        <td>
+                                            ${Number(item.price).toFixed(2)}
+                                        </td>
+
+                                        <td>
+                                            <input
+                                                type="number"
+                                                min="1"
+                                                max={item.stockQuantity}
+                                                value={item.quantity}
+                                                className="form-control"
+                                                style={{ width: "80px" }}
+                                                onChange={e =>
+                                                    handleQuantityChange(
+                                                        item,
+                                                        Number(e.target.value)
+                                                    )
+                                                }
+                                            />
+                                        </td>
+
+                                        <td>
+                                            $
+                                            {(
+                                                Number(item.price) *
+                                                item.quantity
+                                            ).toFixed(2)}
+                                        </td>
+
+                                        <td>
+                                            <button
+                                                type="button"
+                                                className="btn btn-danger"
+                                                onClick={() => {
+                                                    removeFromCart(item.id);
+                                                    toast.success("Product removed from cart");
+                                                }}
+                                            >
+                                                Remove
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+
+                                <tr>
+                                    <td colSpan="3">
+                                        <h4>Subtotal</h4>
+                                    </td>
+                                    <td colSpan="2">
+                                        <h4>${subtotal.toFixed(2)}</h4>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td colSpan="5">
+                                        <Link
+                                            to="/shop"
+                                            className="gray_btn"
+                                        >
+                                            Continue Shopping
+                                        </Link>
+
+                                        <Link
+                                            to="/checkout"
+                                            className="main_btn"
+                                        >
+                                            Proceed to Checkout
+                                        </Link>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
+                </div>
+            </div>
+        </section>
+    );
 };
 
 export default CartItems;

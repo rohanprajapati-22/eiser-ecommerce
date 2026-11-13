@@ -42,9 +42,9 @@ const products = [
   },
 ];
 
-const NewProducts = () => {
+const NewProducts = ({ products }) => {
   return (
-    <section className="new_product_area section_gap_top section_gap_bottom_custom">
+    <section className="new_product_area  section_gap_bottom_custom">
       <div className="container">
 
         {/* Section Heading */}
@@ -83,7 +83,7 @@ const NewProducts = () => {
                 />
               </div>
 
-              <h4>{featuredProduct.price}</h4>
+              <h4>${featuredProduct.price}</h4>
 
               <Link to="/cart" className="main_btn">
                 Add to cart
@@ -106,7 +106,7 @@ const NewProducts = () => {
                     <div className="product-img">
                       <img
                         className="img-fluid w-100"
-                        src={product.image}
+                        src={product.imageUrl}
                         alt={product.name}
                       />
 
@@ -138,7 +138,7 @@ const NewProducts = () => {
 
                       <div className="mt-3">
                         <span className="mr-4">
-                          {product.price}
+                          ${product.price}
                         </span>
 
                         <del>{product.oldPrice}</del>

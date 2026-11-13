@@ -44,7 +44,7 @@ const Navbar = () => {
                   </li>
 
                   <li className="nav-item submenu dropdown">
-                    <Link className="nav-link dropdown-toggle" to="/shop">
+                    <Link className="nav-link dropdown-toggle" to="#">
                       Shop
                     </Link>
 
