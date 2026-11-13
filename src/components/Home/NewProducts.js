@@ -83,7 +83,7 @@ const NewProducts = ({ products }) => {
                 />
               </div>
 
-              <h4>${featuredProduct.price}</h4>
+              <h4>{featuredProduct.price}</h4>
 
               <Link to="/cart" className="main_btn">
                 Add to cart
