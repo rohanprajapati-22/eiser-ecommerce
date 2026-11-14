@@ -1,213 +1,182 @@
-import React from "react";
+import React, { useState } from "react";
+import { useCart } from "../../context/CartContext";
+import { createOrder } from "../../services/orderService";
+import { toast } from "react-toastify";
 
 const CheckoutForm = ({ children }) => {
+  const { cartItems, clearCart } = useCart();
+  const [submitting, setSubmitting] = useState(false);
+
+  const handlePlaceOrder = async (e) => {
+    e.preventDefault();
+    const formElement = e.currentTarget;
+    if (cartItems.length === 0) {
+      toast.error("Your cart is empty!");
+      return;
+    }
+
+    const formData = new FormData(formElement);
+
+    const customerName = [
+      formData.get("firstName"),
+      formData.get("lastName")
+    ].map(value => value.trim()).filter(Boolean).join(" ");
+
+    const address = [
+      formData.get("add1"),
+      formData.get("add2")
+    ].map(value => value.trim()).filter(Boolean).join(", ");
+
+    const orderData = {
+      customerName,
+      email: formData.get("email"),
+      phone: formData.get("number"),
+      address,
+      city: formData.get("city"),
+      postalCode: formData.get("zip"),
+      items: cartItems.map(item => ({
+        productId: Number(item.productId ?? item.id),
+        quantity: Number(item.quantity)
+      }))
+    };
+
+    try {
+      setSubmitting(true);
+
+      const response = await createOrder(orderData);
+
+      toast.success(
+        `Order placed successfully! Order ID: ${response.orderId}`
+      );
+
+      clearCart();
+      formElement.reset();
+    } catch (error) {
+      console.error("Order placement error:", error);
+
+      toast.error(
+        error.response?.data?.message ||
+        error.response?.data ||
+        "Unable to place your order. Please try again."
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
-    <>
-      {/* Returning Customer */}
-      <div className="returning_customer">
-        <div className="check_title">
-          <h2>
-            Returning Customer?
-            <a href="#login"> Click here to login</a>
-          </h2>
-        </div>
+    <div className="billing_details">
+      <form className="row" onSubmit={handlePlaceOrder}>
+        {/* Billing Details */}
+        <div className="col-lg-8">
+          <h3>Billing Details</h3>
 
-        <p>
-          If you have shopped with us before, please enter your details in the
-          boxes below. If you are a new customer, please proceed to the Billing
-          &amp; Shipping section.
-        </p>
-
-        <form className="row contact_form">
-          <div className="col-md-6 form-group p_star">
-            <input
-              type="text"
-              className="form-control"
-              id="name"
-              name="name"
-              placeholder="Username or Email"
-            />
-          </div>
-
-          <div className="col-md-6 form-group p_star">
-            <input
-              type="password"
-              className="form-control"
-              id="password"
-              name="password"
-              placeholder="Password"
-            />
-          </div>
-
-          <div className="col-md-12 form-group">
-            <button type="button" className="btn submit_btn">
-              Send Message
-            </button>
-
-            <div className="creat_account">
-              <input type="checkbox" id="f-option" name="selector" />
-              <label htmlFor="f-option">Remember me</label>
+          <div className="row contact_form">
+            <div className="col-md-6 form-group p_star">
+              <input
+                type="text"
+                className="form-control"
+                name="firstName"
+                placeholder="First name"
+                required
+              />
             </div>
 
-            <a className="lost_pass" href="#forgot-password">
-              Lost your password?
-            </a>
-          </div>
-        </form>
-      </div>
+            <div className="col-md-6 form-group p_star">
+              <input
+                type="text"
+                className="form-control"
+                name="lastName"
+                placeholder="Last name"
+                required
+              />
+            </div>
 
-      {/* Coupon Area */}
-      <div className="cupon_area">
-        <div className="check_title">
-          <h2>
-            Have a coupon?
-            <a href="#coupon"> Click here to enter your code</a>
-          </h2>
+            <div className="col-md-12 form-group">
+              <input
+                type="text"
+                className="form-control"
+                name="company"
+                placeholder="Company name (Optional)"
+              />
+            </div>
+
+            <div className="col-md-6 form-group p_star">
+              <input
+                type="tel"
+                className="form-control"
+                name="number"
+                placeholder="Phone number"
+                required
+              />
+            </div>
+
+            <div className="col-md-6 form-group p_star">
+              <input
+                type="email"
+                className="form-control"
+                name="email"
+                placeholder="Email Address"
+                required
+              />
+            </div>
+
+            <div className="col-md-12 form-group p_star">
+              <input
+                type="text"
+                className="form-control"
+                name="add1"
+                placeholder="Address line 01"
+                required
+              />
+            </div>
+
+            <div className="col-md-12 form-group p_star">
+              <input
+                type="text"
+                className="form-control"
+                name="add2"
+                placeholder="Address line 02 (Optional)"
+              />
+            </div>
+
+            <div className="col-md-12 form-group p_star">
+              <input
+                type="text"
+                className="form-control"
+                name="city"
+                placeholder="Town/City"
+                required
+              />
+            </div>
+
+            <div className="col-md-12 form-group">
+              <input
+                type="text"
+                className="form-control"
+                name="zip"
+                placeholder="Postcode/ZIP"
+                required
+              />
+            </div>
+
+            {/* Order Notes */}
+            <div className="col-md-12 form-group">
+              <h3>Additional Information</h3>
+              <textarea
+                className="form-control"
+                name="message"
+                rows="4"
+                placeholder="Order Notes (Optional)"
+              />
+            </div>
+          </div>
         </div>
 
-        <input type="text" placeholder="Enter coupon code" />
-
-        <a className="tp_btn" href="#apply-coupon">
-          Apply Coupon
-        </a>
-      </div>
-
-      {/* Billing Details and Your Order */}
-      <div className="billing_details">
-        <div className="row">
-          {/* Left Column: Billing Details */}
-          <div className="col-lg-8">
-            <h3>Billing Details</h3>
-
-            <form className="row contact_form">
-              <div className="col-md-6 form-group p_star">
-                <input
-                  type="text"
-                  className="form-control"
-                  id="first"
-                  name="firstName"
-                  placeholder="First name"
-                />
-              </div>
-
-              <div className="col-md-6 form-group p_star">
-                <input
-                  type="text"
-                  className="form-control"
-                  id="last"
-                  name="lastName"
-                  placeholder="Last name"
-                />
-              </div>
-
-              <div className="col-md-12 form-group">
-                <input
-                  type="text"
-                  className="form-control"
-                  id="company"
-                  name="company"
-                  placeholder="Company name"
-                />
-              </div>
-
-              <div className="col-md-6 form-group p_star">
-                <input
-                  type="text"
-                  className="form-control"
-                  id="number"
-                  name="number"
-                  placeholder="Phone number"
-                />
-              </div>
-
-              <div className="col-md-6 form-group p_star">
-                <input
-                  type="email"
-                  className="form-control"
-                  id="email"
-                  name="email"
-                  placeholder="Email Address"
-                />
-              </div>
-
-
-              <div className="col-md-12 form-group p_star">
-                <input
-                  type="text"
-                  className="form-control"
-                  id="add1"
-                  name="add1"
-                  placeholder="Address line 01"
-                />
-              </div>
-
-              <div className="col-md-12 form-group p_star">
-                <input
-                  type="text"
-                  className="form-control"
-                  id="add2"
-                  name="add2"
-                  placeholder="Address line 02"
-                />
-              </div>
-
-              <div className="col-md-12 form-group p_star">
-                <input
-                  type="text"
-                  className="form-control"
-                  id="city"
-                  name="city"
-                  placeholder="Town/City"
-                />
-              </div>
-
-
-              <div className="col-md-12 form-group">
-                <input
-                  type="text"
-                  className="form-control"
-                  id="zip"
-                  name="zip"
-                  placeholder="Postcode/ZIP"
-                />
-              </div>
-
-              {/* Create Account */}
-              <div className="col-md-12 form-group">
-                <div className="creat_account">
-                  <input type="checkbox" id="f-option2" name="selector" />
-                  <label htmlFor="f-option2">Create an account?</label>
-                </div>
-              </div>
-
-              {/* Shipping Details */}
-              <div className="col-md-12 form-group">
-                <div className="creat_account">
-                  <h3>Shipping Details</h3>
-
-                  <input type="checkbox" id="f-option3" name="selector" />
-
-                  <label htmlFor="f-option3">
-                    Ship to a different address?
-                  </label>
-                </div>
-
-                <textarea
-                  className="form-control"
-                  name="message"
-                  id="message"
-                  rows="4"
-                  placeholder="Order Notes"
-                ></textarea>
-              </div>
-            </form>
-          </div>
-
-          {/* Right Column: Your Order */}
-          {children}
-        </div>
-      </div>
-    </>
+        {/* Order Summary */}
+        {React.cloneElement(children, { submitting })}
+      </form>
+    </div>
   );
 };
 

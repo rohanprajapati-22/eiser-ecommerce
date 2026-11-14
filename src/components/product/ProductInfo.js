@@ -4,26 +4,58 @@ import { useCart } from "../../context/CartContext";
 import { toast } from "react-toastify";
 
 const ProductInfo = ({ product }) => {
-  const [quantity, setQuantity] = useState(1);
-
-  const increaseQuantity = () => {
-    setQuantity((prev) => prev + 1);
-  };
-
-  const decreaseQuantity = () => {
-    setQuantity((prev) => Math.max(1, prev - 1));
-  };
+  const [quantity, setQuantity] = useState("1");
 
   const { addToCart } = useCart();
 
+  const maxQuantity = Number(product.stockQuantity);
+
+  const increaseQuantity = () => {
+    const currentQuantity = Number(quantity) || 1;
+
+    if (currentQuantity < maxQuantity) {
+      setQuantity(String(currentQuantity + 1));
+    }
+  };
+
+  const decreaseQuantity = () => {
+    const currentQuantity = Number(quantity) || 1;
+
+    if (currentQuantity > 1) {
+      setQuantity(String(currentQuantity - 1));
+    }
+  };
+
+  const handleQuantityChange = (e) => {
+    const value = e.target.value;
+
+    // Allow empty input while editing
+    if (value === "") {
+      setQuantity("");
+      return;
+    }
+
+    // Allow only whole numbers
+    if (/^\d+$/.test(value)) {
+      setQuantity(value);
+    }
+  };
+
   const handleAddToCart = () => {
-    if (quantity < 1 || quantity > product.stockQuantity) {
+    const selectedQuantity = Number(quantity);
+
+    if (
+      !Number.isInteger(selectedQuantity) ||
+      selectedQuantity < 1 ||
+      selectedQuantity > maxQuantity
+    ) {
       toast.error("Please select a valid quantity");
       return;
     }
 
-    addToCart(product, quantity);
+    addToCart(product, selectedQuantity);
     toast.success("Product added to cart!");
+    setQuantity("1");
   };
 
   return (
@@ -42,13 +74,13 @@ const ProductInfo = ({ product }) => {
 
           <li>
             <span>Availability</span> :{" "}
-            {product.stockQuantity > 0 ? "In Stock" : "Out of Stock"}
+            {maxQuantity > 0 ? "In Stock" : "Out of Stock"}
           </li>
         </ul>
 
         <p>{product.description}</p>
 
-        <p>Available Quantity: {product.stockQuantity}</p>
+        <p>Available Quantity: {maxQuantity}</p>
 
         <div className="product_count">
           <label htmlFor="sst">Quantity:</label>
@@ -58,13 +90,16 @@ const ProductInfo = ({ product }) => {
             id="sst"
             value={quantity}
             min="1"
-            max={product.stockQuantity}
+            max={maxQuantity}
             className="input-text qty"
-            onChange={(e) => {
-              const value = Number(e.target.value);
+            onChange={handleQuantityChange}
+            onBlur={() => {
+              const value = Number(quantity);
 
-              if (value >= 1 && value <= product.stockQuantity) {
-                setQuantity(value);
+              if (!quantity || value < 1) {
+                setQuantity("1");
+              } else if (value > maxQuantity) {
+                setQuantity(String(maxQuantity));
               }
             }}
           />
@@ -73,7 +108,7 @@ const ProductInfo = ({ product }) => {
             className="increase items-count"
             type="button"
             onClick={increaseQuantity}
-            disabled={quantity >= product.stockQuantity}
+            disabled={Number(quantity) >= maxQuantity}
           >
             <i className="lnr lnr-chevron-up"></i>
           </button>
@@ -82,14 +117,19 @@ const ProductInfo = ({ product }) => {
             className="reduced items-count"
             type="button"
             onClick={decreaseQuantity}
-            disabled={quantity <= 1}
+            disabled={Number(quantity) <= 1}
           >
             <i className="lnr lnr-chevron-down"></i>
           </button>
         </div>
 
         <div className="card_area">
-          <button className="main_btn" type="button" onClick={handleAddToCart}>
+          <button
+            className="main_btn"
+            type="button"
+            onClick={handleAddToCart}
+            disabled={maxQuantity <= 0}
+          >
             Add to Cart
           </button>
 

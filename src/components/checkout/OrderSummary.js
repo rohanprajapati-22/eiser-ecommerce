@@ -1,8 +1,6 @@
-
-import React from "react";
 import { useCart } from "../../context/CartContext";
 
-const OrderSummary = () => {
+const OrderSummary = ({ submitting }) => {
   const { cartItems } = useCart();
 
   const subtotal = cartItems.reduce(
@@ -110,15 +108,24 @@ const OrderSummary = () => {
         </div>
 
         <div className="creat_account">
-          <input type="checkbox" id="accept-terms" />
+          <input
+            type="checkbox"
+            id="accept-terms"
+            name="acceptTerms"
+            required
+          />
           <label htmlFor="accept-terms">
             I've read and accept the
           </label>
           <a href="#!"> terms &amp; conditions*</a>
         </div>
 
-        <button type="button" className="main_btn">
-          Proceed to Paypal
+        <button
+          type="submit"
+          className="main_btn"
+          disabled={submitting}
+        >
+          {submitting ? "Placing Order..." : "Place Order"}
         </button>
       </div>
     </div>
