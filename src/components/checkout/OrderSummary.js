@@ -39,7 +39,9 @@ const OrderSummary = ({ submitting }) => {
           {cartItems.map((item) => (
             <li key={item.id}>
               <a href="#!">
-                {item.name}
+                  <div className="checkout-product-name">
+                    {item.name}
+                  </div>
                 <span className="middle">
                   x {String(item.quantity).padStart(2, "0")}
                 </span>

@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
 
@@ -6,9 +5,7 @@ const Navbar = () => {
   return (
     <div className="main_menu">
       <div className="container">
-
         <nav className="navbar navbar-expand-lg navbar-light w-100">
-
           {/* Logo */}
           <Link className="navbar-brand logo_h" to="/">
             <img src="/img/logo.png" alt="Eiser Logo" />
@@ -35,12 +32,12 @@ const Navbar = () => {
             id="navbarSupportedContent"
           >
             <div className="row w-100 mr-0">
-
               <div className="col-lg-7 pr-0">
                 <ul className="nav navbar-nav center_nav pull-right">
-
                   <li className="nav-item">
-                    <Link className="nav-link" to="/">Home</Link>
+                    <Link className="nav-link" to="/">
+                      Home
+                    </Link>
                   </li>
 
                   <li className="nav-item submenu dropdown">
@@ -54,11 +51,11 @@ const Navbar = () => {
                           Shop Category
                         </Link>
                       </li>
-                      <li className="nav-item">
+                      {/* <li className="nav-item">
                         <Link className="nav-link" to="/product-details">
                           Product Details
                         </Link>
-                      </li>
+                      </li> */}
                       <li className="nav-item">
                         <Link className="nav-link" to="/checkout">
                           Product Checkout
@@ -115,14 +112,12 @@ const Navbar = () => {
                       Contact
                     </Link>
                   </li>
-
                 </ul>
               </div>
 
               {/* Right Icons */}
               <div className="col-lg-5 pr-0">
                 <ul className="nav navbar-nav navbar-right right_nav pull-right">
-
                   <li className="nav-item">
                     <Link to="/search" className="icons">
                       <i className="ti-search" aria-hidden="true"></i>
@@ -146,10 +141,8 @@ const Navbar = () => {
                       <i className="ti-heart" aria-hidden="true"></i>
                     </Link>
                   </li>
-
                 </ul>
               </div>
-
             </div>
           </div>
         </nav>
