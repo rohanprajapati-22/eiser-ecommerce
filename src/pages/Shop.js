@@ -12,7 +12,7 @@ const Shop = () => {
         <div className="container">
           <div className="row flex-row-reverse">
             <ShopProducts />
-               <ShopSidebar />
+               {/* <ShopSidebar /> */}
           </div>
         </div>
       </section>

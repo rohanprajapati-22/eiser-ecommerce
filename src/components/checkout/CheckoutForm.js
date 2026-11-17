@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { useCart } from "../../context/CartContext";
 import { createOrder } from "../../services/orderService";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const CheckoutForm = ({ children }) => {
   const { cartItems, clearCart } = useCart();
   const [submitting, setSubmitting] = useState(false);
+  const navigate = useNavigate();
 
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
@@ -17,15 +19,15 @@ const CheckoutForm = ({ children }) => {
 
     const formData = new FormData(formElement);
 
-    const customerName = [
-      formData.get("firstName"),
-      formData.get("lastName")
-    ].map(value => value.trim()).filter(Boolean).join(" ");
+    const customerName = [formData.get("firstName"), formData.get("lastName")]
+      .map((value) => value.trim())
+      .filter(Boolean)
+      .join(" ");
 
-    const address = [
-      formData.get("add1"),
-      formData.get("add2")
-    ].map(value => value.trim()).filter(Boolean).join(", ");
+    const address = [formData.get("add1"), formData.get("add2")]
+      .map((value) => value.trim())
+      .filter(Boolean)
+      .join(", ");
 
     const orderData = {
       customerName,
@@ -34,10 +36,10 @@ const CheckoutForm = ({ children }) => {
       address,
       city: formData.get("city"),
       postalCode: formData.get("zip"),
-      items: cartItems.map(item => ({
+      items: cartItems.map((item) => ({
         productId: Number(item.productId ?? item.id),
-        quantity: Number(item.quantity)
-      }))
+        quantity: Number(item.quantity),
+      })),
     };
 
     try {
@@ -45,9 +47,13 @@ const CheckoutForm = ({ children }) => {
 
       const response = await createOrder(orderData);
 
-      toast.success(
-        `Order placed successfully! Order ID: ${response.orderId}`
-      );
+      navigate("/order-confirmation", {
+        state: {
+          order: response,
+          customer: orderData,
+          items: cartItems,
+        },
+      });
 
       clearCart();
       formElement.reset();
@@ -56,8 +62,8 @@ const CheckoutForm = ({ children }) => {
 
       toast.error(
         error.response?.data?.message ||
-        error.response?.data ||
-        "Unable to place your order. Please try again."
+          error.response?.data ||
+          "Unable to place your order. Please try again.",
       );
     } finally {
       setSubmitting(false);
@@ -66,8 +72,7 @@ const CheckoutForm = ({ children }) => {
 
   return (
     <div className="billing_details">
-      <form className="row" onSubmit={handlePlaceOrder}>
-        {/* Billing Details */}
+      <form className="row" onSubmit={handlePlaceOrder}>       
         <div className="col-lg-8">
           <h3>Billing Details</h3>
 
@@ -173,7 +178,6 @@ const CheckoutForm = ({ children }) => {
           </div>
         </div>
 
-        {/* Order Summary */}
         {React.cloneElement(children, { submitting })}
       </form>
     </div>

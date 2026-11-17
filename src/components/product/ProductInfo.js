@@ -2,16 +2,32 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const ProductInfo = ({ product }) => {
   const [quantity, setQuantity] = useState("1");
+  const navigate = useNavigate();
 
   const { addToCart } = useCart();
 
   const maxQuantity = Number(product.stockQuantity);
 
+  // Validate selected quantity
+  const selectedQuantity = Number(quantity);
+
+  const quantityError =
+    quantity === ""
+      ? "Please enter a quantity."
+      : !Number.isInteger(selectedQuantity) || selectedQuantity < 1
+      ? "Quantity must be at least 1."
+      : selectedQuantity > maxQuantity
+      ? `Only ${maxQuantity} items are available in stock.`
+      : "";
+
+  const isQuantityInvalid = Boolean(quantityError);
+
   const increaseQuantity = () => {
-    const currentQuantity = Number(quantity) || 1;
+    const currentQuantity = Number(quantity) || 0;
 
     if (currentQuantity < maxQuantity) {
       setQuantity(String(currentQuantity + 1));
@@ -19,7 +35,7 @@ const ProductInfo = ({ product }) => {
   };
 
   const decreaseQuantity = () => {
-    const currentQuantity = Number(quantity) || 1;
+    const currentQuantity = Number(quantity) || 0;
 
     if (currentQuantity > 1) {
       setQuantity(String(currentQuantity - 1));
@@ -29,33 +45,23 @@ const ProductInfo = ({ product }) => {
   const handleQuantityChange = (e) => {
     const value = e.target.value;
 
-    // Allow empty input while editing
-    if (value === "") {
-      setQuantity("");
-      return;
-    }
-
-    // Allow only whole numbers
-    if (/^\d+$/.test(value)) {
+    if (value === "" || /^\d+$/.test(value)) {
       setQuantity(value);
     }
   };
 
   const handleAddToCart = () => {
-    const selectedQuantity = Number(quantity);
-
-    if (
-      !Number.isInteger(selectedQuantity) ||
-      selectedQuantity < 1 ||
-      selectedQuantity > maxQuantity
-    ) {
-      toast.error("Please select a valid quantity");
+    if (isQuantityInvalid || maxQuantity <= 0) {
+      toast.error(quantityError || "Product is out of stock.");
       return;
     }
 
     addToCart(product, selectedQuantity);
+
     toast.success("Product added to cart!");
+
     setQuantity("1");
+    navigate("/shop");
   };
 
   return (
@@ -93,22 +99,17 @@ const ProductInfo = ({ product }) => {
             max={maxQuantity}
             className="input-text qty"
             onChange={handleQuantityChange}
-            onBlur={() => {
-              const value = Number(quantity);
-
-              if (!quantity || value < 1) {
-                setQuantity("1");
-              } else if (value > maxQuantity) {
-                setQuantity(String(maxQuantity));
-              }
-            }}
+            aria-invalid={isQuantityInvalid}
           />
 
           <button
             className="increase items-count"
             type="button"
             onClick={increaseQuantity}
-            disabled={Number(quantity) >= maxQuantity}
+            disabled={
+              maxQuantity <= 0 ||
+              selectedQuantity >= maxQuantity
+            }
           >
             <i className="lnr lnr-chevron-up"></i>
           </button>
@@ -117,18 +118,25 @@ const ProductInfo = ({ product }) => {
             className="reduced items-count"
             type="button"
             onClick={decreaseQuantity}
-            disabled={Number(quantity) <= 1}
+            disabled={selectedQuantity <= 1}
           >
             <i className="lnr lnr-chevron-down"></i>
           </button>
         </div>
+
+        {/* Quantity Validation Message */}
+        {quantityError && (
+          <p className="quantity-error">
+            {quantityError}
+          </p>
+        )}
 
         <div className="card_area">
           <button
             className="main_btn"
             type="button"
             onClick={handleAddToCart}
-            disabled={maxQuantity <= 0}
+            disabled={maxQuantity <= 0 || isQuantityInvalid}
           >
             Add to Cart
           </button>

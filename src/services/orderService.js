@@ -11,3 +11,14 @@ export const createOrder = async (orderData) => {
 
   return response.data;
 };
+
+export const getOrders = async () => {
+    const response = await axios.get(`${API_URL}/Orders`);
+    return response.data;
+};
+
+// Get order by ID
+export const getOrderById = async (id) => {
+    const response = await axios.get(`${API_URL}/Orders/${id}`);
+    return response.data;
+};

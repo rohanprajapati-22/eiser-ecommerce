@@ -32,7 +32,7 @@ const ShopProducts = () => {
   }
 
   return (
-    <div className="col-lg-9">
+    <div className="col-lg-12">
       <div className="row">
         {products.map((product) => (
           <div className="col-lg-4 col-md-6" key={product.id}>

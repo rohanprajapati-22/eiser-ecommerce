@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import { toast } from "react-toastify";
@@ -9,20 +10,66 @@ const CartItems = () => {
         updateQuantity
     } = useCart();
 
+    const [quantities, setQuantities] = useState({});
+
     const subtotal = cartItems.reduce(
         (total, item) => total + Number(item.price) * item.quantity,
         0
     );
 
-    const handleQuantityChange = (item, quantity) => {
-        if (quantity < 1) return;
+    const getQuantity = (item) => {
+        return quantities[item.id] ?? String(item.quantity);
+    };
 
-        if (quantity > item.stockQuantity) {
-            toast.error("Requested quantity exceeds available stock");
+    const handleQuantityChange = (item, value) => {
+        // Allow empty input while editing
+        if (value === "" || /^\d+$/.test(value)) {
+            setQuantities(prev => ({
+                ...prev,
+                [item.id]: value
+            }));
+        }
+    };
+
+    const handleQuantityBlur = (item) => {
+        const value = quantities[item.id];
+
+        // No change in input
+        if (value === undefined) return;
+
+        const quantity = Number(value);
+
+        if (!Number.isInteger(quantity) || quantity < 1) {
+            toast.error("Please enter a valid quantity.");
+
+            setQuantities(prev => ({
+                ...prev,
+                [item.id]: String(item.quantity)
+            }));
+
+            return;
+        }
+
+        if (quantity > Number(item.stockQuantity)) {
+            toast.error(
+                `Only ${item.stockQuantity} items are available in stock.`
+            );
+
+            setQuantities(prev => ({
+                ...prev,
+                [item.id]: String(item.quantity)
+            }));
+
             return;
         }
 
         updateQuantity(item.id, quantity);
+
+        setQuantities(prev => {
+            const updated = { ...prev };
+            delete updated[item.id];
+            return updated;
+        });
     };
 
     if (cartItems.length === 0) {
@@ -31,6 +78,7 @@ const CartItems = () => {
                 <div className="container text-center section_gap">
                     <h3>Your cart is empty!</h3>
                     <p>Add some products to continue shopping.</p>
+
                     <Link to="/shop" className="main_btn">
                         Continue Shopping
                     </Link>
@@ -87,16 +135,28 @@ const CartItems = () => {
                                                 type="number"
                                                 min="1"
                                                 max={item.stockQuantity}
-                                                value={item.quantity}
+                                                value={getQuantity(item)}
                                                 className="form-control"
                                                 style={{ width: "80px" }}
                                                 onChange={e =>
                                                     handleQuantityChange(
                                                         item,
-                                                        Number(e.target.value)
+                                                        e.target.value
                                                     )
                                                 }
+                                                onBlur={() =>
+                                                    handleQuantityBlur(item)
+                                                }
+                                                onKeyDown={e => {
+                                                    if (e.key === "Enter") {
+                                                        e.currentTarget.blur();
+                                                    }
+                                                }}
                                             />
+
+                                            <small>
+                                                Available: {item.stockQuantity}
+                                            </small>
                                         </td>
 
                                         <td>
@@ -113,7 +173,10 @@ const CartItems = () => {
                                                 className="btn btn-danger"
                                                 onClick={() => {
                                                     removeFromCart(item.id);
-                                                    toast.success("Product removed from cart");
+
+                                                    toast.success(
+                                                        "Product removed from cart"
+                                                    );
                                                 }}
                                             >
                                                 Remove
@@ -126,6 +189,7 @@ const CartItems = () => {
                                     <td colSpan="3">
                                         <h4>Subtotal</h4>
                                     </td>
+
                                     <td colSpan="2">
                                         <h4>${subtotal.toFixed(2)}</h4>
                                     </td>
