@@ -11,7 +11,7 @@ const MyOrders = () => {
     const fetchOrders = async () => {
       try {
         const data = await getOrders();
-        setOrders(data);
+        setOrders(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Error fetching orders:", error);
         setError("Unable to load orders. Please try again.");
@@ -70,7 +70,8 @@ const MyOrders = () => {
                   <tr key={order.id}>
                     <td>#{order.id}</td>
                     <td>{new Date(order.orderDate).toLocaleDateString()}</td>
-                    <td>{order.items.length} items</td>
+                    {/* <td>{order.items.length} items</td> */}
+                    <td>{order.orderItems?.length ?? 0} items</td>
                     <td>${Number(order.totalAmount).toFixed(2)}</td>
                     <td>{order.orderStatus}</td>
                     <td>

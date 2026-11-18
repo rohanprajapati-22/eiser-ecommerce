@@ -1,32 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const products = [
-  {
-    id: 1,
-    name: "Premium Fashion Jacket",
-    price: "$130.00",
-    image: "/img/product/inspired-product/i1.jpg",
-  },
-  {
-    id: 2,
-    name: "Women's Fashion Bag",
-    price: "$90.00",
-    image: "/img/product/inspired-product/i2.jpg",
-  },
-  {
-    id: 3,
-    name: "Modern Sneakers",
-    price: "$105.00",
-    image: "/img/product/inspired-product/i3.jpg",
-  },
-  {
-    id: 4,
-    name: "Classic Wrist Watch",
-    price: "$150.00",
-    image: "/img/product/inspired-product/i4.jpg",
-  },
-];
 
 const InspiredProducts = ({ products }) => {
   return (
@@ -54,9 +28,9 @@ const InspiredProducts = ({ products }) => {
                     <Link to={`/product-details/${product.id}`}>
                       <i className="ti-eye"></i>
                     </Link>
-                    <Link to="/wishlist">
+                    {/* <Link to="/wishlist">
                       <i className="ti-heart"></i>
-                    </Link>
+                    </Link> */}
                     <Link to="/cart">
                       <i className="ti-shopping-cart"></i>
                     </Link>

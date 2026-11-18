@@ -17,6 +17,7 @@ import MyOrders from "./pages/MyOrders";
 import OrderDetails from "./pages/OrderDetails";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -31,28 +32,47 @@ function App() {
           <Route path="/shop" element={<Shop />} />
           <Route path="/product-details/:id" element={<ProductDetails />} />
           <Route path="/cart" element={<Cart />} />
-          <Route path="/checkout" element={<Checkout />} />
           <Route
-              path="/order-confirmation"
-              element={<OrderConfirmation />}
-            />
-            <Route path="/my-orders" element={<MyOrders />} />
-            <Route path="/order-details/:id" element={<OrderDetails />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/login" element={<Login />} />
+            path="/checkout"
+            element={
+              <ProtectedRoute>
+                <Checkout />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/order-confirmation" element={<OrderConfirmation />} />
+          {/* <Route path="/my-orders" element={<MyOrders />} /> */}
+          <Route
+            path="/my-orders"
+            element={
+              <ProtectedRoute>
+                <MyOrders />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/order-details/:id"
+            element={
+              <ProtectedRoute>
+                <OrderDetails />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
         </Routes>
 
         <Footer />
-         <ToastContainer
-                    position="top-right"
-                    autoClose={2500}
-                    hideProgressBar={false}
-                    newestOnTop
-                    closeOnClick
-                    pauseOnHover
-                    draggable
-                    theme="colored"
-                />
+        <ToastContainer
+          position="top-right"
+          autoClose={2500}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          pauseOnHover
+          draggable
+          theme="colored"
+        />
       </BrowserRouter>
     </CartProvider>
   );

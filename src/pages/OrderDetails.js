@@ -41,10 +41,12 @@ const OrderDetails = () => {
         </div>;
     }
 
-    const subtotal = order.items.reduce(
-        (total, item) => total + Number(item.subTotal),
-        0
-    );
+const orderItems = order.orderItems || [];
+
+const subtotal = orderItems.reduce(
+    (total, item) => total + Number(item.subTotal),
+    0
+);
 
     const shipping = Number(order.totalAmount) - subtotal;
 
@@ -96,7 +98,7 @@ const OrderDetails = () => {
                         </thead>
 
                         <tbody>
-                            {order.items.map((item) => (
+                            {orderItems.map((item) => (
                                 <tr key={item.id}>
                                     <td>{item.productName}</td>
                                     <td>${Number(item.price).toFixed(2)}</td>

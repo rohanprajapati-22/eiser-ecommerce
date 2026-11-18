@@ -10,37 +10,6 @@ const featuredProduct = {
   image: "/img/product/new-product/new-product1.png",
 };
 
-// Four products on the right side
-const products = [
-  {
-    id: 1,
-    name: "Nike latest sneaker",
-    price: "$25.00",
-    oldPrice: "$35.00",
-    image: "/img/product/new-product/n1.jpg",
-  },
-  {
-    id: 2,
-    name: "Men’s denim jeans",
-    price: "$25.00",
-    oldPrice: "$35.00",
-    image: "/img/product/new-product/n2.jpg",
-  },
-  {
-    id: 3,
-    name: "Quartz hand watch",
-    price: "$25.00",
-    oldPrice: "$35.00",
-    image: "/img/product/new-product/n3.jpg",
-  },
-  {
-    id: 4,
-    name: "Adidas sport shoe",
-    price: "$25.00",
-    oldPrice: "$35.00",
-    image: "/img/product/new-product/n4.jpg",
-  },
-];
 
 const NewProducts = ({ products }) => {
   return (
@@ -116,9 +85,9 @@ const NewProducts = ({ products }) => {
                           <i className="ti-eye"></i>
                         </Link>
 
-                        <Link to="/wishlist">
+                        {/* <Link to="/wishlist">
                           <i className="ti-heart"></i>
-                        </Link>
+                        </Link> */}
 
                         <Link to="/cart">
                           <i className="ti-shopping-cart"></i>
